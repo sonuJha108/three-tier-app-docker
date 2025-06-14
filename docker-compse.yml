@@ -13,7 +13,7 @@ services:
       - notes-app
     restart: always
 
-  mysql:
+  db:
     container_name: mysql
     image: mysql
     ports: 
@@ -22,7 +22,7 @@ services:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: test_db
     volumes:
-      - mysql-data:/var/lib/mysql
+      - ./mysql-data:/var/lib/mysql
     networks:
       - notes-app
     restart: always
@@ -45,7 +45,12 @@ services:
     env_file:
       - ".env"
     restart: always
-
+    healthcheck:
+      test: ["CMD-SHELL","curl -f http://localhost:8000/admin || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
 
 volumes:
   mysql-data:
